@@ -65,17 +65,42 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/myToys/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await toysCollection.findOne(query);
+      res.send(result)
+    })
+
     // My toys
 
     app.get('/myToys', async (req, res) => {
-      console.log(req.query.email);
       let query = {}
       if (req.query?.email) {
         query = {seller_email: req.query.email}
       }
-      console.log(query);
       const result = await toysCollection.find(query).toArray();
       res.send(result);
+    })
+
+    app.get('/myToys', async (req, res) => {
+      const cursor = toysCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.patch('/myToys/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const updatedToy = req.body;
+      console.log(updatedToy);
+      const updateDoc = {
+        $set: {
+          price: updatedToy.price, quantity: updatedToy.quantity, description: updatedToy.description
+        }
+      }
+      const result = await toysCollection.updateOne(filter, updateDoc);
+      res.send(result)
     })
 
 
