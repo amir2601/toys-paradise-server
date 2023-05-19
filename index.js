@@ -93,7 +93,6 @@ async function run() {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)}
       const updatedToy = req.body;
-      console.log(updatedToy);
       const updateDoc = {
         $set: {
           price: updatedToy.price, quantity: updatedToy.quantity, description: updatedToy.description
