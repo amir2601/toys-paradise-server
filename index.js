@@ -30,25 +30,41 @@ async function run() {
     const toysCollection = client.db('toysParadise').collection('toys')
 
 
+    // all toys
+
     app.get('/allToys', async (req, res) => {
       const cursor = toysCollection.find();
       const result = await cursor.toArray();
       res.send(result);
-    })
+    });
+
+    // single toy details
 
     app.get('/toy/:id', async (req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await toysCollection.findOne(query);
       res.send(result);
-    })
+    });
+
+    // delete toy
 
     app.delete('/allToys/:id', async (req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await toysCollection.deleteOne(query);
       res.send(result);
-    })
+    });
+
+    // Add Toy
+
+    app.post('/allToys', async (req, res) => {
+      const newToy = req.body;
+      console.log(newToy);
+      const result = await toysCollection.insertOne(newToy);
+      res.send(result);
+    });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
