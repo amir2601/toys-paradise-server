@@ -31,10 +31,10 @@ async function run() {
 
 
     // Creating index on two fields
-    const indexKeys = { toy_name: 1};
-    const indexOptions = { name: "toyName" };
+    // const indexKeys = { toy_name: 1};
+    // const indexOptions = { name: "toyName" };
 
-    const result = await toysCollection.createIndex(indexKeys, indexOptions);
+    // const result = await toysCollection.createIndex(indexKeys, indexOptions);
 
 
     app.get('/toySearch/:text', async (req, res) => {
@@ -99,7 +99,13 @@ async function run() {
       if (req.query?.email) {
         query = {seller_email: req.query.email}
       }
-      const result = await toysCollection.find(query).toArray();
+      
+      let sortOrder = 1; // 1 for ascending, -1 for descending
+      if (req.query?.sort === 'desc') {
+        sortOrder = -1;
+      }
+
+      const result = await toysCollection.find(query).sort({price: sortOrder}).toArray();
       res.send(result);
     })
 
