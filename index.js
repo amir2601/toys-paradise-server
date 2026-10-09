@@ -6,7 +6,14 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middlewere
-app.use(cors("https://toys-paradise.web.app"));
+const allowedOrigins = [
+  'https://toys-paradise.web.app',
+  'http://localhost:5173',
+];
+app.use(cors({
+  origin: allowedOrigins,
+  optionsSuccessStatus: 200,
+}));
 app.use(express.json());
 
 
@@ -38,7 +45,8 @@ async function run() {
 
 
     app.get('/toySearch/:text', async (req, res) => {
-      const searchText = req.params.text;
+      const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchText = escapeRegex(req.params.text);
       const result = await toysCollection.find({
         $or: [
           { toy_name: { $regex: searchText, $options: 'i' }}
@@ -53,8 +61,7 @@ async function run() {
     // all toys
 
     app.get('/allToys', async (req, res) => {
-      const cursor = toysCollection.find();
-      const result = await cursor.toArray().limit(20);
+      const result = await toysCollection.find().toArray();
       res.send(result);
     });
 
@@ -108,12 +115,6 @@ async function run() {
       const result = await toysCollection.find(query).sort({price: sortOrder}).toArray();
       res.send(result);
     })
-
-    app.get('/myToys', async (req, res) => {
-      const cursor = toysCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
 
     app.patch('/myToys/:id', async (req, res) => {
       const id = req.params.id;
